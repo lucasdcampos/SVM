@@ -1,75 +1,101 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "opcodes.h"
 #include "memory.h"
 
-int handle_push(int value, int offset);
+
+int handle_push(int value);
 int handle_pop();
-int handle_add();
+int handle_bin_op();
 int handle_print();
 
-int ip = 0;                 // Instruction Pointer (Program Counter)
-int sp = -1;                // Stack Pointer
+int ip = 0;
+int sp = -1;
 int* stack;
 
-// Assembly Instructions
 int program[] = {
-    0x01, 0x0A,             // IPUSH 0x0A (10)
-    0x01, 0x03,             // IPUSH 0x03 (3)
-    0x03,                   // IADD  (Adds 0x0A and 0x03)
-    0xFF                    // PRINT (Should print 13)
+    IPUSH, 0x0A,
+    IPUSH, 0x03,
+    IADD,
+    IPUSH, 0x02,
+    IMUL,
+    IPRINT,
+    HALT
 };
 
 int main(void) {
-    
     stack = createMemory(1000);
-    int current = program[ip];
     int programSize = sizeof(program) / sizeof(program[0]);
 
-    while(current != 0x00 || ip < programSize) {
-        ip++;
+    while (ip < programSize) {
+        int current = program[ip];
         switch (current)
         {
-        case 0x01:
-            handle_push(program[ip], 1);
+        case IPUSH:
+            handle_push(program[ip + 1]);
+            ip++;
             break;
-        case 0x02:
+        case IPOP:
             handle_pop();
             break;
-        case 0x03:
-            handle_add();
+        case IADD:
+        case ISUB:
+        case IMUL:
+        case IDIV:
+            handle_bin_op();
             break;
-        case 0xFF:
+        case IPRINT:
             handle_print();
             break;
+        case HALT:
+            return 0;
         default:
             break;
         }
-        current = program[ip];
+        ip++;
     }
 
+    free(stack);
     return 0;
 }
 
-int handle_push(int value, int offset) {
-    sp++;                           // SP starts at -1
-    stack[sp] = value;              // Push operand to Stack
-    ip+= offset;                    // Move to Next Instruction (?)s
-
-    return stack[sp];               // Returns the pushed value
+int handle_push(int value) {
+    sp++;
+    stack[sp] = value;
+    return stack[sp];
 }
 
 int handle_pop() {
-    int value = stack[sp];          // Save current value
-    sp--;                           // Pops the value from the Stack
-    return value;                   // Returns the popped value
+    if (sp >= 0) {
+        int value = stack[sp];
+        sp--;
+        return value;
+    }
+    return -1;
 }
 
-int handle_add() {
-    int rhs = handle_pop();
-    int lhs = handle_pop();
-    return handle_push(lhs + rhs, 0);
+int handle_bin_op()
+{
+    if (sp >= 1) {
+        int rhs = handle_pop();
+        int lhs = handle_pop();
+        switch (program[ip])
+        {
+            case IADD: return handle_push(lhs + rhs);
+            case ISUB: return handle_push(lhs - rhs);
+            case IMUL: return handle_push(lhs * rhs);
+            case IDIV: return handle_push(lhs / rhs);
+        }
+        
+    }
+    return -1;
 }
 
 int handle_print() {
+    if (sp >= 0) {
+        printf("%d\n", stack[sp]);
+    } else {
+        printf("Stack is empty!\n");
+    }
     ip++;
-    printf("%d\n", stack[sp]);
 }
