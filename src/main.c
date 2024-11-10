@@ -9,7 +9,7 @@ int program[] = {
     CPRINT,
     IPUSH, 1,
     IADD,
-    JLET, 91, 2,
+    JLT, 91, 2,
     NL,
     HALT
 };

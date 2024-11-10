@@ -10,6 +10,12 @@
 #define JUMP 0x07
 #define IPRINT 0x08
 #define CPRINT 0x9
-#define JLET 0xA
+#define JLT 0xA
+#define JLEQ 0xB
+#define JGT 0xC
+#define JGEQ 0xD
+#define JEQ 0xE
+#define JNEQ 0xF
+#define JZ 0x10
 
-#define NL IPUSH, '\n', CPRINT
+#define NL IPUSH, '\n', CPRINT // Not an actual instruction, just a little cheat

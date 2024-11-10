@@ -40,8 +40,14 @@ int executeProgram(VM* vm, const int stackSize) {
         case JUMP:
             handle_jump(vm, program[vm->ip + 1]);
             break;
-        case JLET:
-            handle_jlet(vm, program[vm->ip + 1], program[vm->ip + 2]);
+        case JZ:
+        case JEQ:
+        case JNEQ:
+        case JLT:
+        case JGT:
+        case JLEQ:
+        case JGEQ:
+            handle_conditional_jmp(vm, program[vm->ip + 1], program[vm->ip + 2]);
             break;
         case IPRINT:
             handle_print(vm);
@@ -77,16 +83,45 @@ int handle_jump(VM* vm, const int address) {
     return vm->ip;
 }
 
-int handle_jlet(VM* vm, const int value, const int address) {
-    if(vm->stack[vm->sp] < value)
-    {
-        vm->ip = address;
-        return vm->ip;
-    }
-    vm->ip += 3;
+int handle_conditional_jmp(VM* vm, const int value, const int address) {
+    int* stack_top = &vm->stack[vm->sp];
 
+    int should_jump(int condition) {
+        if (condition) {
+            vm->ip = address;
+            return 1;
+        }
+        return 0;
+    }
+
+    switch (vm->program[vm->ip]) {
+        case JZ:
+            if (should_jump(*stack_top == 0)) return vm->ip;
+            break;
+        case JEQ:
+            if (should_jump(*stack_top == value)) return vm->ip;
+            break;
+        case JNEQ:
+            if (should_jump(*stack_top != value)) return vm->ip;
+            break;
+        case JLEQ:
+            if (should_jump(*stack_top <= value)) return vm->ip;
+            break;
+        case JGEQ:
+            if (should_jump(*stack_top >= value)) return vm->ip;
+            break;
+        case JLT:
+            if (should_jump(*stack_top < value)) return vm->ip;
+            break;
+        case JGT:
+            if (should_jump(*stack_top > value)) return vm->ip;
+            break;
+    }
+
+    vm->ip += 3;
     return vm->ip;
 }
+
 
 int handle_pop(VM* vm) {
     if (vm->sp >= 0) {
