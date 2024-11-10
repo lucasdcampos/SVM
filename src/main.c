@@ -3,30 +3,21 @@
 #include "opcodes.h"
 #include "vm.h"
 
-// example program
+// example program (prints the entire alphabet)
 int program[] = {
-    IPUSH, 'H', CPRINT,
-    IPUSH, 'e', CPRINT,
-    IPUSH, 'l', CPRINT,
-    IPUSH, 'l', CPRINT,
-    IPUSH, 'o', CPRINT,
-    IPUSH, ',', CPRINT,
-    IPUSH, ' ', CPRINT,
-    IPUSH, 'W', CPRINT,
-    IPUSH, 'o', CPRINT,
-    IPUSH, 'r', CPRINT,
-    IPUSH, 'l', CPRINT,
-    IPUSH, 'd', CPRINT,
-    IPUSH, '!', CPRINT,
-    IPUSH, '\n', CPRINT,
+    IPUSH, 65,
+    CPRINT,
+    IPUSH, 1,
+    IADD,
+    JLET, 91, 2,
+    NL,
     HALT
 };
 
-
 int main(void) {
     VM vm;
-    loadProgram(&vm, program, 43);
     int _1KB = 1000; // 1KB
+    loadProgram(&vm, program, 13);
     executeProgram(&vm, _1KB);
     return 0;
 }

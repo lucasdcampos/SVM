@@ -10,3 +10,6 @@
 #define JUMP 0x07
 #define IPRINT 0x08
 #define CPRINT 0x9
+#define JLET 0xA
+
+#define NL IPUSH, '\n', CPRINT
