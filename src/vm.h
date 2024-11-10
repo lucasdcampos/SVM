@@ -17,3 +17,4 @@ int handle_pop(VM* vm);
 int handle_jump(VM* vm, const int address);
 int handle_bin_op(VM* vm);
 int handle_print(VM* vm);
+int handle_cprint(VM* vm);

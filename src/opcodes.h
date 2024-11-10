@@ -9,3 +9,4 @@
 #define IDIV  0x06
 #define JUMP 0x07
 #define IPRINT 0x08
+#define CPRINT 0x9

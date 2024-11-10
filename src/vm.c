@@ -43,6 +43,10 @@ int executeProgram(VM* vm, const int stackSize) {
             handle_print(vm);
             vm->ip += 1;
             break;
+        case CPRINT:
+            handle_cprint(vm);
+            vm->ip += 1;
+            break;
         case HALT:
             free(vm->stack);
             return 0;
@@ -96,6 +100,15 @@ int handle_bin_op(VM* vm)
 int handle_print(VM* vm) {
     if (vm->sp >= 0) {
         printf("%d\n", vm->stack[vm->sp]);
+    } else {
+        printf("Stack is empty!\n");
+    }
+    return 0;
+}
+
+int handle_cprint(VM* vm) {
+    if (vm->sp >= 0) {
+        printf("%c", vm->stack[vm->sp]);
     } else {
         printf("Stack is empty!\n");
     }
