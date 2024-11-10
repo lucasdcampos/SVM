@@ -3,9 +3,9 @@
 #include "opcodes.h"
 #include "memory.h"
 
-
 int handle_push(int value);
 int handle_pop();
+int handle_jump();
 int handle_bin_op();
 int handle_print();
 
@@ -13,14 +13,13 @@ int ip = 0;
 int sp = -1;
 int* stack;
 
+// example program
 int program[] = {
-    IPUSH, 0x0A,
-    IPUSH, 0x03,
-    IADD,
-    IPUSH, 0x02,
-    IMUL,
+    IPUSH, 69,
     IPRINT,
-    HALT
+    IPOP,
+    IPOP,
+    JUMP, 0
 };
 
 int main(void) {
@@ -44,6 +43,9 @@ int main(void) {
         case IDIV:
             handle_bin_op();
             break;
+        case JUMP:
+            handle_jump(program[ip + 1]);
+            break;
         case IPRINT:
             handle_print();
             break;
@@ -63,6 +65,11 @@ int handle_push(int value) {
     sp++;
     stack[sp] = value;
     return stack[sp];
+}
+
+int handle_jump(int address) {
+    ip = address - 1;
+    return ip;
 }
 
 int handle_pop() {
@@ -97,5 +104,5 @@ int handle_print() {
     } else {
         printf("Stack is empty!\n");
     }
-    ip++;
+    return 0;
 }

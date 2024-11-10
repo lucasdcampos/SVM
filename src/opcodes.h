@@ -7,4 +7,5 @@
 #define ISUB  0x04
 #define IMUL  0x05
 #define IDIV  0x06
-#define IPRINT 0x07
+#define JUMP 0x07
+#define IPRINT 0x08
